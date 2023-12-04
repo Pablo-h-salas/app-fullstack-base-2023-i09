@@ -8,15 +8,27 @@ body {
 main {
     flex: 1 0 auto;
 }
-div>div.col{
-    background-color: bisque;
-    border: 2px solid black;
 
+/* div>div.col{
+    background-color: white;
+} */
+
+div > div.col >ul> li > a {
+    font-size:medium;
+    color: rgb(4, 42, 75); 
+    
 }
+
 
 #btnListar{
     width: 100%;
 }
+
+.modal {
+    background-color: white;
+  }
+
+  
 .textoError{
     width: 50%;
     margin: auto;

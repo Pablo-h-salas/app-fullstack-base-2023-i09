@@ -11,10 +11,10 @@ class Main implements EventListenerObject{
             console.log(u.mostrar(),this.usuarios.length);
         }
     }
+    
     private buscarDevices() {
         
-        
-       
+              
         let xmlRequest = new XMLHttpRequest();
         
         xmlRequest.onreadystatechange = () => {
@@ -29,9 +29,21 @@ class Main implements EventListenerObject{
 
                     for (let d of datos) {
                         
-                        ul.innerHTML +=
+                        let itemList=
                         ` <li class="collection-item avatar">
-                        <img src="images/yuna.jpg" alt="" class="circle">
+                        <img src="./static/images/`
+
+                        if (0==d.type){
+                            itemList+=`lampara`
+                        } else if (1==d.type){
+                            itemList+=`cortina-inteligente`
+                        } else if (2==d.type){
+                            itemList+=`ventilador`
+                        } else if(3==d.type){
+                            itemList+=`monitor-de-tv`
+                        }
+                        
+                        itemList+=`.png" alt="" class="circle">
                         <span class="title">${d.name}</span>
                         <p>
                          ${d.description}
@@ -40,14 +52,28 @@ class Main implements EventListenerObject{
                         <div class="switch">
                         <label>
                           Off
-                          <input type="checkbox"  >
+                          <input type="checkbox"`;
+
+                          itemList +=`nuevoAtt="${d.id}" id="cb_${d.id}"`
+
+                        if (d.state) {
+                            itemList+= ` checked `
+                        }
+                        
+                        itemList+= `>
                           <span class="lever"></span>
                           On
                         </label>
                       </div>
                         </a>
                       </li>`
-                      
+                      ul.innerHTML += itemList;
+                    }
+                    // asignamos un id a cada uno de los checkbox creados 
+                    // this contiene el metodo HandleEvent
+                    for (let d of datos) {
+                        let checkbox = document.getElementById("cb_" + d.id);
+                        checkbox.addEventListener("click", this);
                     }
                     
                 }else{
@@ -60,7 +86,7 @@ class Main implements EventListenerObject{
         xmlRequest.send();
     }
 
-    private ejecutarPost() {
+    private ejecutarPost(id:number,state:boolean) {
         let xmlRequest = new XMLHttpRequest();
 
         xmlRequest.onreadystatechange = () => {
@@ -78,9 +104,10 @@ class Main implements EventListenerObject{
         
         xmlRequest.open("POST", "http://localhost:8000/device", true)
         xmlRequest.setRequestHeader("Content-Type", "application/json");
+        //s contiene la informacion a enviar
         let s = {
-            name: "",
-        description:"descripcion"    };
+            id: id,
+            state: state   };
         xmlRequest.send(JSON.stringify(s));
     }
 
@@ -111,15 +138,14 @@ class Main implements EventListenerObject{
         
         
         if ("btnListar" == elemento.id) {
-            this.buscarDevices();
-
-            
+            this.buscarDevices();          
         } else if ("btnGuardar" == elemento.id) {
             this.cargarUsuario();
-        } else if ("cb" == elemento.id) {
+        } else if (elemento.id.startsWith("cb_")) {
             let checkbox = <HTMLInputElement>elemento;
-            console.log(checkbox.checked);
-            this.ejecutarPost();
+            console.log(checkbox.getAttribute("nuevoAtt"),checkbox.checked, elemento.id.substring(3, elemento.id.length));
+            
+            this.ejecutarPost(parseInt(checkbox.getAttribute("nuevoAtt")),checkbox.checked);
         }
 
     }
@@ -129,12 +155,14 @@ class Main implements EventListenerObject{
     
 window.addEventListener("load", () => {
 
+    // Inicializacion de Formulario (form select CSS)
     var elems = document.querySelectorAll('select');
     M.FormSelect.init(elems, "");
     var elemsModal = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elemsModal, "");
 
     let main1: Main = new Main();
+
     let boton = document.getElementById("btnListar");
     
     boton.addEventListener("click", main1);   
