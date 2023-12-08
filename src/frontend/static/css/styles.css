@@ -9,6 +9,9 @@ main {
     flex: 1 0 auto;
 }
 
+.btn-floating{
+padding: 50px;
+}
 /* div>div.col{
     background-color: white;
 } */
@@ -22,6 +25,12 @@ div > div.col >ul> li > a {
 
 #btnListar{
     width: 100%;
+}
+
+.btn {
+    width: 40%;
+    margin-right: 100px;
+    margin-left: 300px;
 }
 
 .modal {

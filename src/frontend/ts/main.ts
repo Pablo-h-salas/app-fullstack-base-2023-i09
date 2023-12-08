@@ -12,9 +12,9 @@ class Main implements EventListenerObject{
         }
     }
     
-    private buscarDevices() {
+    private buscarDevices(user_id:number) {
         
-              
+         console.log(typeof user_id);     
         let xmlRequest = new XMLHttpRequest();
         
         xmlRequest.onreadystatechange = () => {
@@ -28,7 +28,7 @@ class Main implements EventListenerObject{
                     let ul = document.getElementById("listaDisp"); 
 
                     for (let d of datos) {
-                        
+                       if (user_id == d.id_user){
                         let itemList=
                         ` <li class="collection-item avatar">
                         <img src="./static/images/`
@@ -41,6 +41,10 @@ class Main implements EventListenerObject{
                             itemList+=`ventilador`
                         } else if(3==d.type){
                             itemList+=`monitor-de-tv`
+                        } else if (4==d.type){
+                            itemList+=`acondicionador-de-aire`
+                        } else if (5==d.type){
+                            itemList+=`garaje`
                         }
                         
                         itemList+=`.png" alt="" class="circle">
@@ -69,6 +73,7 @@ class Main implements EventListenerObject{
                       </li>`
                       ul.innerHTML += itemList;
                     }
+                    } // fin del for
                     // asignamos un id a cada uno de los checkbox creados 
                     // this contiene el metodo HandleEvent
                     for (let d of datos) {
@@ -133,14 +138,54 @@ class Main implements EventListenerObject{
         
     }
 
+    private buscarUsuarios(): void{
+        
+        let iNombre = <HTMLInputElement> document.getElementById("iNombre");
+        let iPassword = <HTMLInputElement>document.getElementById("iPassword");
+        let pInfo = document.getElementById("pInfo");
+        let htitulo = document.getElementById("titulo");
+
+        let xmlRequest = new XMLHttpRequest();
+        
+        xmlRequest.onreadystatechange = () => {
+         
+            if (xmlRequest.readyState == 4) {
+                if(xmlRequest.status==200){
+                    console.log("llego respuesta");
+                    let respuesta = xmlRequest.responseText;
+                    let datos:Array<Usuarios> = JSON.parse(respuesta);
+                    for (let d of datos) {
+                        if (iNombre.value == d.user && iPassword.value == d.password){
+                            htitulo.innerHTML = `Bienvenido ${d.nombre}`
+                            // ejercutar funcion de listar dispositivos y pasar el id_user
+                            this.buscarDevices(d.id_user);
+                        }else{
+                            console.log("no se encontro Usuarios");
+                        }
+                    }
+                 }
+            
+            }
+        }
+        xmlRequest.open("GET","http://localhost:8000/usuarios",true)
+        xmlRequest.send();
+        
+    }
+    
+    
+
     handleEvent(object: Event): void {
         let elemento = <HTMLElement>object.target;
         
         
         if ("btnListar" == elemento.id) {
-            this.buscarDevices();          
+           //this.buscarDevices();          
         } else if ("btnGuardar" == elemento.id) {
             this.cargarUsuario();
+            console.log("presionaste guardar");
+        } else if("btnIngresar"== elemento.id) {
+            this.buscarUsuarios();
+            console.log("presionaste ingresar");
         } else if (elemento.id.startsWith("cb_")) {
             let checkbox = <HTMLInputElement>elemento;
             console.log(checkbox.getAttribute("nuevoAtt"),checkbox.checked, elemento.id.substring(3, elemento.id.length));
@@ -164,16 +209,19 @@ window.addEventListener("load", () => {
     let main1: Main = new Main();
 
     let boton = document.getElementById("btnListar");
-    
     boton.addEventListener("click", main1);   
 
     let botonGuardar = document.getElementById("btnGuardar");
     botonGuardar.addEventListener("click",main1);
 
+    // botones de ingresar de la ventana usuarios
+    let botonIngresar = document.getElementById("btnIngresar");
+    botonIngresar.addEventListener("click", main1);
+
     let checkbox = document.getElementById("cb");
     checkbox.addEventListener("click", main1);
-    
 
 
+   
 });
 

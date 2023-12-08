@@ -63,6 +63,18 @@ app.get('/devices/', function(req, res, next) {
   
 });
 
+app.get('/usuarios/',function(req, res, next) {
+    utils.query("select * from Usuarios",(err,rsp,fields)=>{
+
+        if(err==null){   
+            res.status(200).send(JSON.stringify(rsp));
+        }else{
+            res.status(409).send(err);
+        }
+
+    }); 
+});
+
 app.listen(PORT, function(req, res) {
     console.log("NodeJS API running correctly");
 });

@@ -10,6 +10,7 @@
     <script type="text/javascript" src="js/usuario.js"></script>
     <script type="text/javascript" src="js/device.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/usuarios.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
@@ -18,7 +19,10 @@
         <!-- Navigation bar -->
         <nav style="background-color:#124580">
             <div class="nav-wrapper">
+    
                 <a href="#!" class="brand-logo left" style="margin-left: 15px;">Smart Home</a>
+                   <!-- <img src="./static/images/iot.png" alt="" class="circle" width="50"> -->
+                    
                 <!-- <ul id="nav-mobile" class="right" style="margin-right: 15px;">
                     <li><a href="#">Help</a></li>
                 </ul> -->
@@ -34,17 +38,27 @@
                         <li class="collection-item teal"><a class="modal-trigger" href="#modal1">Ingresar</a></li>
                         <li class="collection-item teal"><a href="#!">Administracion de cuenta</a></li>
                         <li class="collection-item teal"><a href="#!">Ayuda</a></li>
-                        <li class="collection-item teal"><a href="#!"></a> </li>
+                        <li class="collection-item teal" style="height: 100vh;"><a href="#!"> 
+                            <!-- <img src="./static/images/upc.png" alt="" class="circle"> -->
+                            <img src="./static/images/upc.png" alt="" class="circle">
+                        </a> </li>
 
                         <div class="container teal"></div>
                     </ul>
                 </div>
 
-                <div id="lista" class="col s12 m6 l9">
+                <div id="lista" class="col s10 m4 l7">
                     <br />
-                    <h4>Bienvenido!</h4>
+                    <h4 id="titulo">Ingrese para ver sus dispositivos</h4>
                     <br />
                     <ul class="collection" id="listaDisp"></ul>
+                </div>
+
+                <div id="adicionar" class="col s2 m2 l2">
+                    <br/>
+                    <a class="btn-floating btn-large " title="Agregar dispositivo"><i class="material-icons">add</i></a>
+                    <br/><br/>
+                    <a class="btn-floating btn-large " title="Editar"><i class="material-icons">edit</i></a>
                 </div>
                 <!-- Modal Trigger -->
                 <!-- <div class="col s12 m6 l6">
@@ -89,6 +103,9 @@
                         <p id="pInfo"></p>
 
                         <button id="btnGuardar" class="modal-close  btn">Guardar</button>
+                        <a><button id="btnIngresar" class="modal-close  btn">Ingresar</button></a>
+                        <br/><br/>
+                        <a><button id="btnSalir" class="modal-close btn">Salir</button></a>
                         <p></p>
                     </div>
                 </div>
