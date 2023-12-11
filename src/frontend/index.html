@@ -11,6 +11,7 @@
     <script type="text/javascript" src="js/device.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript" src="js/usuarios.js"></script>
+    <script type="text/javascript" src="js/device_type.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
@@ -19,10 +20,10 @@
         <!-- Navigation bar -->
         <nav style="background-color:#124580">
             <div class="nav-wrapper">
-    
+
                 <a href="#!" class="brand-logo left" style="margin-left: 15px;">Smart Home</a>
-                   <!-- <img src="./static/images/iot.png" alt="" class="circle" width="50"> -->
-                    
+                <!-- <img src="./static/images/iot.png" alt="" class="circle" width="50"> -->
+
                 <!-- <ul id="nav-mobile" class="right" style="margin-right: 15px;">
                     <li><a href="#">Help</a></li>
                 </ul> -->
@@ -32,16 +33,16 @@
 
     <main>
         <div>
-            <div class="row" >
+            <div class="row">
                 <div class="col s12 m3 l3">
                     <ul class="collection teal">
                         <li class="collection-item teal"><a class="modal-trigger" href="#modal1">Ingresar</a></li>
                         <li class="collection-item teal"><a href="#!">Administracion de cuenta</a></li>
                         <li class="collection-item teal"><a href="#!">Ayuda</a></li>
-                        <li class="collection-item teal" style="height: 100vh;"><a href="#!"> 
-                            <!-- <img src="./static/images/upc.png" alt="" class="circle"> -->
-                            <img src="./static/images/upc.png" alt="" class="circle">
-                        </a> </li>
+                        <li class="collection-item teal" style="height: 100vh;"><a href="#!">
+                                <!-- <img src="./static/images/upc.png" alt="" class="circle"> -->
+                                <img src="./static/images/upc.png" alt="" class="circle">
+                            </a> </li>
 
                         <div class="container teal"></div>
                     </ul>
@@ -55,10 +56,14 @@
                 </div>
 
                 <div id="adicionar" class="col s2 m2 l2">
-                    <br/>
-                    <a class="btn-floating btn-large " title="Agregar dispositivo"><i class="material-icons">add</i></a>
-                    <br/><br/>
-                    <a class="btn-floating btn-large " title="Editar"><i class="material-icons">edit</i></a>
+                    <br />
+                    <a class="btn-floating btn-large modal-trigger" href="#modal2" title="Agregar dispositivo">
+                        <i id="btnSumar" class="material-icons">add</i>
+                    </a>
+
+                    <br /><br />
+                    <a class="btn-floating btn-large " title="Editar">
+                        <i id="editarDisp" class="material-icons">edit</i></a>
                 </div>
                 <!-- Modal Trigger -->
                 <!-- <div class="col s12 m6 l6">
@@ -102,7 +107,7 @@
 
                         <p id="pInfo"></p>
                         <a><button id="btnIngresar" class="btn">Ingresar</button></a>
-                        <br/><br/>
+                        <br /><br />
                         <a><button id="btnSalirModal1" class="modal-close btn">Salir</button></a>
                         <p></p>
                     </div>
@@ -110,15 +115,77 @@
             </div>
             <!-- fin modal 1 -->
 
-            <!-- <div class="input-field col s12">
-                    <select>
-                        <option value="" disabled selected>Choose your option</option>
-                        <option value="1">Option 1</option>
-                        <option value="2">Option 2</option>
-                        <option value="3">Option 3</option>
-                    </select>
-                    <label>Materialize Select</label>
-                </div> -->
+            <!-- modal 2 -->
+            <div id="modal2" class="modal">
+                <div class="modal-content">
+                    <div class="row">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input placeholder="Parlantes" id="device_name" type="text" class="validate">
+                                    <label for="device_name">Nombre del dispositivo</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="device_description" type="text" class="validate">
+                                    <label for="device_description">Descripcion del dispositivo</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input disabled value="No hay usuario registrado" id="usuario" type="text"
+                                        class="validate">
+                                    <label for="usuario">No editable</label>
+                                </div>
+                                <div class="input-field col s6">
+
+                                    <select>
+                                        <!-- <option value="" disabled selected>Elegir</option>
+                                        <option value="1">Option 98</option>
+                                        <option value="2">Option 2</option>
+                                        <option value="3">Option 3</option> -->
+
+                                    </select>
+                                    <label>Seleccione tipo de dispositivo</label>
+                                    <select id="listaTipos1" name="select">
+                                        <!-- <option value="value1">Value 1</option>
+                                        <option value="value2" selected>Value 2</option>
+                                        <option value="value3">Value 3</option> -->
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- <div class="row">
+                                <div class="col s12">
+                                    This is an inline input field:
+                                    <div class="input-field inline">
+                                        <input id="email_inline" type="email" class="validate">
+                                        <label for="email_inline">Email</label>
+                                        <span class="helper-text" data-error="wrong" data-success="right">Helper
+                                            text</span>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-field col s12">
+                <select>
+                    <!-- <option value="" disabled selected>Choose your option</option>
+                    <option value="1">Option 1</option>
+                    <option value="2">Option 2</option>
+                    <option value="3">Option 3</option> -->
+                </select>
+                <label>Materialize Select</label>
+            </div>
+
+            <ul id="dropdown2" class="dropdown-content">
+                <li><a href="#!">one<span class="badge">1</span></a></li>
+                <li><a href="#!">two<span class="new badge">1</span></a></li>
+                <li><a href="#!">three</a></li>
+            </ul>
+            <a class="btn dropdown-trigger" href="#!" data-target="dropdown2">Dropdown<i
+                    class="material-icons right">arrow_drop_down</i></a>
 
 
             <div class="row">
@@ -126,7 +193,8 @@
                     <textarea id="textarea_1" class="materialize-textarea" style="height: 150px;" readonly></textarea>
                 </div>
                 <div class="col s4 m4 l2 xl2">
-                    <button class="btn waves-effect waves-light button-view" id="btnListar" name="hello_button">Listar</button>
+                    <button class="btn waves-effect waves-light button-view" id="btnListar"
+                        name="hello_button">Listar</button>
                     <button id="btnGuardar" class="modal-close  btn">Guardar</button>
                 </div>
             </div>

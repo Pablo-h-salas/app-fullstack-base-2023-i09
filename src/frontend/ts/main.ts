@@ -112,7 +112,6 @@ class Main implements EventListenerObject {
 
     private ejecutarPost(id: number, state: boolean | undefined, initial_value: number | undefined) {
         let xmlRequest = new XMLHttpRequest();
-
         xmlRequest.onreadystatechange = () => {
             if (xmlRequest.readyState == 4) {
                 if (xmlRequest.status == 200) {
@@ -121,9 +120,6 @@ class Main implements EventListenerObject {
                     alert("Salio mal la consulta");
                 }
             }
-
-
-
         }
 
         xmlRequest.open("POST", "http://localhost:8000/device", true)
@@ -205,6 +201,54 @@ class Main implements EventListenerObject {
 
     }
 
+    private sumarDispositivo(): void {
+        console.log("presiono sumar dispositivos");
+
+        let xmlRequest = new XMLHttpRequest();
+
+        xmlRequest.onreadystatechange = () => {
+
+            if (xmlRequest.readyState == 4) {
+                if (xmlRequest.status == 200) {
+                    //console.log(xmlRequest.responseText, xmlRequest.readyState);
+                    let respuesta = xmlRequest.responseText;
+                    let datos: Array<Device_type> = JSON.parse(respuesta);
+                    // recupaerar listaTipos
+                    let sel = document.getElementById("listaTipos") as HTMLSelectElement;;
+                    //sel.innerHTML = "";
+
+                    for (let d of datos) {
+                        // let itemList =
+                        //     `<option value="${d.id_tipo}">${d.descripcion}</option>`;
+
+                        let option = document.createElement("option");
+                        option.value = d.id_tipo.toString(); // Asegúrate de convertir a string si es necesario
+                        option.textContent = d.descripcion;
+
+                        //sel.innerHTML += itemList;
+                        sel.appendChild(option);
+
+                    }
+                    console.log("hola que tal");
+                    //console.log(sel);
+
+                    // for (let d of datos) {
+                    //     let checkbox = document.getElementById("cb_" + d.id);
+
+                    //     checkbox.addEventListener("click", this);
+                    // }
+
+                } else {
+                    console.log("no encontre nada");
+                }
+            }
+
+        }
+        xmlRequest.open("GET", "http://localhost:8000/tipos_dispositivos", true)
+        xmlRequest.send();
+
+    }
+
     private cerrarModal(btnSalirId: string): void {
         let btnSalir = document.getElementById(btnSalirId);
         if (btnSalir) {
@@ -224,7 +268,11 @@ class Main implements EventListenerObject {
             console.log("presionaste guardar");
         } else if ("btnIngresar" == elemento.id) {
             this.buscarUsuarios();
-            console.log("presionaste ingresar");
+        } else if ("btnSumar" == elemento.id) {
+            this.sumarDispositivo();
+
+        } else if ("editarDisp" == elemento.id) {
+            console.log("editar dispositivo");
         } else if (elemento.id.startsWith("cb_")) {
             let checkbox = <HTMLInputElement>elemento;
             console.log(checkbox.getAttribute("nuevoAtt"), checkbox.checked, elemento.id.substring(3, elemento.id.length));
@@ -248,8 +296,10 @@ window.addEventListener("load", () => {
     // Inicializacion de Formulario (form select CSS)
     var elems = document.querySelectorAll('select');
     M.FormSelect.init(elems, "");
+
     var elemsModal = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elemsModal, "");
+
 
     let main1: Main = new Main();
 
@@ -263,8 +313,17 @@ window.addEventListener("load", () => {
     let botonIngresar = document.getElementById("btnIngresar");
     botonIngresar.addEventListener("click", main1);
 
+    // sumar y agregar dispositivos
+    let botonSumarDisp = document.getElementById("btnSumar");
+    botonSumarDisp.addEventListener("click", main1);
+
+    let botonEditarDisp = document.getElementById("editarDisp");
+    botonEditarDisp.addEventListener("click", main1);
+
     // let checkbox = document.getElementById("cb");
     // checkbox.addEventListener("click", main1);
+
+
 
 
 

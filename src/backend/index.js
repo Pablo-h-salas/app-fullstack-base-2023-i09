@@ -100,6 +100,20 @@ app.get('/usuarios/', function (req, res, next) {
     });
 });
 
+// Tabla de tipos de dispositivo
+
+app.get('/tipos_dispositivos/', function (req, res, next) {
+    utils.query("select * from Tipos_dispositivos", (err, rsp, fields) => {
+
+        if (err == null) {
+            res.status(200).send(JSON.stringify(rsp));
+        } else {
+            res.status(409).send(err);
+        }
+
+    });
+});
+
 app.listen(PORT, function (req, res) {
     console.log("NodeJS API running correctly");
 });
