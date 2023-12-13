@@ -161,6 +161,7 @@ class Main implements EventListenerObject {
         let iPassword = <HTMLInputElement>document.getElementById("iPassword");
         let pInfo = document.getElementById("pInfo");
         let htitulo = document.getElementById("titulo");
+        let iusuario = document.getElementById("usuario");
         //let modal1 = document.getElementById("modal1");
 
         let usuario_actual: Usuarios | undefined;
@@ -181,7 +182,8 @@ class Main implements EventListenerObject {
                     }
 
                     if (usuario_actual != undefined) {
-                        htitulo.innerHTML = `Bienvenido ${usuario_actual.nombre}`
+                        htitulo.innerHTML = `Bienvenido ${usuario_actual.nombre}`;
+                        iusuario.setAttribute("value", `${usuario_actual.user}`);
                         console.log(usuario_actual);
                         // ejercutar funcion de listar dispositivos y pasar el id_user
                         this.buscarDevices(usuario_actual.id_user);
@@ -203,6 +205,9 @@ class Main implements EventListenerObject {
 
     private sumarDispositivo(): void {
         console.log("presiono sumar dispositivos");
+        // inicializo boton sumar Dispositivo
+        let btn = document.getElementById("btnmodal21");
+        btn.innerHTML = "dropdown";
 
         let xmlRequest = new XMLHttpRequest();
 
@@ -213,30 +218,22 @@ class Main implements EventListenerObject {
                     //console.log(xmlRequest.responseText, xmlRequest.readyState);
                     let respuesta = xmlRequest.responseText;
                     let datos: Array<Device_type> = JSON.parse(respuesta);
-                    // recupaerar listaTipos
-                    let sel = document.getElementById("listaTipos") as HTMLSelectElement;;
-                    //sel.innerHTML = "";
+                    // recuperar listaTipos
+                    let sel = document.getElementById("listaTipos");
+                    sel.innerHTML = "";
 
                     for (let d of datos) {
-                        // let itemList =
-                        //     `<option value="${d.id_tipo}">${d.descripcion}</option>`;
-
-                        let option = document.createElement("option");
-                        option.value = d.id_tipo.toString(); // Asegúrate de convertir a string si es necesario
-                        option.textContent = d.descripcion;
-
-                        //sel.innerHTML += itemList;
-                        sel.appendChild(option);
+                        let itemList =
+                            //`<option value="${d.id_tipo}">${d.descripcion}</option>`;
+                            `<li><a id = "a_${d.descripcion}" href="#!">${d.descripcion}</a></li>`;
+                        sel.innerHTML += itemList;
 
                     }
-                    console.log("hola que tal");
-                    //console.log(sel);
 
-                    // for (let d of datos) {
-                    //     let checkbox = document.getElementById("cb_" + d.id);
-
-                    //     checkbox.addEventListener("click", this);
-                    // }
+                    for (let d of datos) {
+                        let a = document.getElementById("a_" + d.descripcion);
+                        a.addEventListener("click", this);
+                    }
 
                 } else {
                     console.log("no encontre nada");
@@ -254,6 +251,39 @@ class Main implements EventListenerObject {
         if (btnSalir) {
             btnSalir.click();
         }
+    }
+
+    private completarModal2(description: string): void {
+        let btn = document.getElementById("btnmodal21");
+        btn.innerHTML = `${description}`;
+    }
+
+    private enviarDispositivo(): void {
+        console.log("se ha enviado el dispositivo");
+        let xmlRequest = new XMLHttpRequest();
+        xmlRequest.onreadystatechange = () => {
+            if (xmlRequest.readyState == 4) {
+                if (xmlRequest.status == 200) {
+                    console.log("llego resputa", xmlRequest.responseText);
+                } else {
+                    alert("Salio mal la consulta");
+                }
+            }
+        }
+
+        xmlRequest.open("POST", "http://localhost:8000/device", true)
+        xmlRequest.setRequestHeader("Content-Type", "application/json");
+        //s contiene la informacion a enviar
+        let s = {
+            name: id,
+            description: state,
+            state: initial_value,
+            type: 1,
+            binario: 1,
+            initial_value: 0,
+            id_user: 1
+        };
+        xmlRequest.send(JSON.stringify(s));
     }
 
 
@@ -282,6 +312,11 @@ class Main implements EventListenerObject {
             let range = <HTMLInputElement>elemento;
             this.ejecutarPost(parseInt(elemento.id.substring(6)), undefined, parseInt(range.value));
 
+        } else if (elemento.id.startsWith("a_")) {
+            let a = <HTMLInputElement>elemento;
+            this.completarModal2(elemento.id.substring(2));
+        } else if ("btnEnviar" == elemento.id) {
+            this.enviarDispositivo();
         }
 
 
@@ -299,6 +334,9 @@ window.addEventListener("load", () => {
 
     var elemsModal = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elemsModal, "");
+
+    var elem = document.querySelectorAll('.dropdown-trigger');
+    M.Dropdown.init(elem, "");
 
 
     let main1: Main = new Main();
@@ -319,6 +357,9 @@ window.addEventListener("load", () => {
 
     let botonEditarDisp = document.getElementById("editarDisp");
     botonEditarDisp.addEventListener("click", main1);
+
+    let botonEnviar = document.getElementById("btnEnviar");
+    botonEnviar.addEventListener("click", main1);
 
     // let checkbox = document.getElementById("cb");
     // checkbox.addEventListener("click", main1);
