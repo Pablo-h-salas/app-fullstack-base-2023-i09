@@ -114,6 +114,48 @@ app.get('/tipos_dispositivos/', function (req, res, next) {
     });
 });
 
+app.post("/add-devices", (req, res, next) => {
+
+
+    const query = `INSERT INTO Devices (name, description, state, type, binario, initial_value, id_user) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+    const values = [
+        req.body.name,
+        req.body.description,
+        req.body.state,
+        req.body.type,
+        req.body.binario,
+        req.body.initial_value,
+        req.body.id_user
+    ];
+
+    utils.query(query, values, (err, rsp, fields) => {
+        if (err === null) {
+            console.log("rsp", rsp);
+            res.status(200).send(JSON.stringify(rsp));
+        } else {
+            console.log("err", err);
+            res.status(409).send(err);
+        }
+    });
+
+});
+
+app.delete('/eliminar-device', function (req, res, next) {
+    utils.query("DELETE from Devices WHERE id =" + req.body.id, (err, rsp, fields) => {
+
+        if (err == null) {
+            res.status(200).send(JSON.stringify(rsp));
+        } else {
+            res.status(409).send(err);
+        }
+
+    });
+});
+
+
+
 app.listen(PORT, function (req, res) {
     console.log("NodeJS API running correctly");
 });

@@ -9,7 +9,7 @@ main {
 }
 
 .btn-floating {
-    padding: 50px;
+    padding: 1px;
 }
 
 /* div>div.col{
@@ -30,7 +30,7 @@ div>div.col>ul>li>a {
 .btn {
     width: 50%;
     margin-right: 100px;
-    margin-left: 300px;
+    margin-left: 50px;
 }
 
 #btnmodal21 {

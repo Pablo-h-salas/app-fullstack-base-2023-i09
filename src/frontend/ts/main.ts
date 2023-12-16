@@ -1,5 +1,7 @@
 
 var M;
+let deviceToDelete: number;
+
 class Main implements EventListenerObject {
     public usuarios: Array<Usuario> = new Array<Usuario>();
 
@@ -83,7 +85,7 @@ class Main implements EventListenerObject {
                         </label>
                       </div>
                         </a>
-                      </li>`
+                        <a class="btn-floating modal-trigger" href="#modal3"><i id = "icon_${d.id}" class="material-icons">delete</i></a></li>`
                             ul.innerHTML += itemList;
                         }
                     } // fin del for
@@ -93,6 +95,9 @@ class Main implements EventListenerObject {
                         if (d.id_user == user_id) {
                             let checkbox = document.getElementById("cb_" + d.id);
                             let range = document.getElementById("range_" + d.id);
+                            let icon = document.getElementById("icon_" + d.id);
+
+                            icon.addEventListener("click", this);
                             checkbox.addEventListener("click", this);
                             if (range != null) {
                                 range.addEventListener("click", this);
@@ -162,7 +167,8 @@ class Main implements EventListenerObject {
         let pInfo = document.getElementById("pInfo");
         let htitulo = document.getElementById("titulo");
         let iusuario = document.getElementById("usuario");
-        //let modal1 = document.getElementById("modal1");
+        let idusuario = document.getElementById("id_user") as HTMLInputElement;
+
 
         let usuario_actual: Usuarios | undefined;
 
@@ -183,6 +189,7 @@ class Main implements EventListenerObject {
 
                     if (usuario_actual != undefined) {
                         htitulo.innerHTML = `Bienvenido ${usuario_actual.nombre}`;
+                        idusuario.value = usuario_actual.id_user.toString(); // para imprimir valor en modal 2
                         iusuario.setAttribute("value", `${usuario_actual.user}`);
                         console.log(usuario_actual);
                         // ejercutar funcion de listar dispositivos y pasar el id_user
@@ -224,8 +231,7 @@ class Main implements EventListenerObject {
 
                     for (let d of datos) {
                         let itemList =
-                            //`<option value="${d.id_tipo}">${d.descripcion}</option>`;
-                            `<li><a id = "a_${d.descripcion}" href="#!">${d.descripcion}</a></li>`;
+                            `<li><a id = "a_${d.descripcion}" newat = "${d.id_tipo}" href="#!">${d.descripcion}</a></li>`;
                         sel.innerHTML += itemList;
 
                     }
@@ -253,37 +259,99 @@ class Main implements EventListenerObject {
         }
     }
 
-    private completarModal2(description: string): void {
+    private completarModal2(description: string, tipo: string): void {
         let btn = document.getElementById("btnmodal21");
+        let id_tipo = document.getElementById("id_type") as HTMLInputElement;
         btn.innerHTML = `${description}`;
+        id_tipo.value = tipo;
     }
 
     private enviarDispositivo(): void {
-        console.log("se ha enviado el dispositivo");
+        //Recuperar datos del dispositivo
+        let name = document.getElementById("device_name") as HTMLInputElement;
+        let description = document.getElementById("device_description") as HTMLInputElement;
+        let user = document.getElementById("id_user") as HTMLInputElement;
+        let tipo = document.getElementById("id_type") as HTMLInputElement;
+
+        let pInfo2 = document.getElementById("pInfo2");
+        let enable = true;
+        // armar un vector con todos ellos y verificar que no esten vacios
+
+        let vector: string[] = [name.value, description.value, user.value, tipo.value];
+        for (let v of vector) {
+            if (v === "") {
+                // si hay un campo vacio deshabilita el enable, no enviara nada 
+                enable = false;
+                break;
+            }
+        }
+
+        if (enable) {
+            let xmlRequest = new XMLHttpRequest();
+            xmlRequest.onreadystatechange = () => {
+                if (xmlRequest.readyState == 4) {
+                    if (xmlRequest.status == 200) {
+                        console.log("llego respuesta", xmlRequest.responseText);
+                    } else {
+                        alert("Salio mal la consulta");
+                    }
+                }
+            }
+
+            xmlRequest.open("POST", "http://localhost:8000/add-devices", true)
+            xmlRequest.setRequestHeader("Content-Type", "application/json");
+            //s contiene la informacion a enviar
+            let s = {
+                name: name.value,
+                description: description.value,
+                state: false, // inicializamos en cero
+                type: Number(tipo.value),
+                binario: false, // a todo nuevo dispositivo vamos a darle la posibilidad de tener valores no binarios
+                initial_value: 0,
+                id_user: Number(user.value)
+            };
+            xmlRequest.send(JSON.stringify(s));
+            this.buscarDevices(Number(user.value));
+
+            // inicializar el contenido de los formularios
+            name.value = "";
+            description.value = "";
+            tipo.value = "";
+            // cerrar el Modal2 
+            this.cerrarModal("btnSalirModal2");
+
+        } else {
+            // notificar y no cerrar Modal
+            pInfo2.innerHTML = "Completar todos los campos antes de enviar!";
+            pInfo2.className = "textoError";
+        }
+    }
+
+    private eliminarPost(id: number) {
+
+        console.log("el id a eliminar es ", id);
+        let user = document.getElementById("id_user") as HTMLInputElement;
         let xmlRequest = new XMLHttpRequest();
         xmlRequest.onreadystatechange = () => {
             if (xmlRequest.readyState == 4) {
                 if (xmlRequest.status == 200) {
-                    console.log("llego resputa", xmlRequest.responseText);
+                    console.log("llego respuesta", xmlRequest.responseText);
                 } else {
                     alert("Salio mal la consulta");
                 }
             }
         }
 
-        xmlRequest.open("POST", "http://localhost:8000/device", true)
+        xmlRequest.open("DELETE", "http://localhost:8000/eliminar-device", true)
         xmlRequest.setRequestHeader("Content-Type", "application/json");
         //s contiene la informacion a enviar
         let s = {
-            name: id,
-            description: state,
-            state: initial_value,
-            type: 1,
-            binario: 1,
-            initial_value: 0,
-            id_user: 1
+            id: id,
         };
         xmlRequest.send(JSON.stringify(s));
+
+        // volver a cargar dispositivos
+        this.buscarDevices(Number(user.value));
     }
 
 
@@ -314,9 +382,17 @@ class Main implements EventListenerObject {
 
         } else if (elemento.id.startsWith("a_")) {
             let a = <HTMLInputElement>elemento;
-            this.completarModal2(elemento.id.substring(2));
+            this.completarModal2(elemento.id.substring(2), a.getAttribute("newat"));
+            console.log(a.getAttribute("newat"));
         } else if ("btnEnviar" == elemento.id) {
             this.enviarDispositivo();
+        } else if (elemento.id.startsWith("icon_")) {
+            let icon = <HTMLInputElement>elemento;
+            deviceToDelete = parseInt(elemento.id.substring(5));
+
+            // this.eliminarPost(parseInt(elemento.id.substring(5)));
+        } else if ("btnEliminarDispositivo" == elemento.id) {
+            this.eliminarPost(deviceToDelete);
         }
 
 
@@ -361,6 +437,8 @@ window.addEventListener("load", () => {
     let botonEnviar = document.getElementById("btnEnviar");
     botonEnviar.addEventListener("click", main1);
 
+    let botonEliminar = document.getElementById("btnEliminarDispositivo");
+    botonEliminar.addEventListener("click", main1);
     // let checkbox = document.getElementById("cb");
     // checkbox.addEventListener("click", main1);
 
