@@ -4,14 +4,22 @@
 
 Web App Full Stack Base
 =======================
+## Usuario y contrasena 
 
-*Ayudaría mucho si apoyaras este proyecto con una ⭐ en Github!*
+Esta aplicacion IoT ya posee 3 ususarios registrados hasta el momento, es necesario para poder interactuar con el la aplicacion, por lo cual se dejan los datos a continuacion:
 
-Este proyecto es una aplicación web fullstack que se ejecuta sobre el ecosistema `Docker`. Está compuesta por un compilador de `TypeScript` que te permite utilizar este superset de JavaScript para poder programar un `cliente web`. También tiene un servicio en `NodeJS` que te permite ejecutar código en backend y al mismo tiempo disponibilizar el código del cliente web para interactar con el servicio. Además tiene una `base de datos` MySQL que puede interactuar con el backend para guardar y consultar datos, y de manera adicional trae un `administrador` de base de datos para poder administrar la base en caso que lo necesites.
+1) usuario: pablo.salas password:password
+2) usuario: matias.ramos password:password
+3) usuario: alfred.pennyworth password:password
 
-La aplicación IoT de base que viene con este proyecto se encarga de crear una tabla llamada `Devices` en la base de datos, y la idea es que vos puedas desarrollar el código de backend y frontend que te permita controlar desde el navegador el estado de los devices de un hogar inteligente - *como pueden ser luces, TVs, ventiladores, persianas, enchufes y otros* - y almacenar los estados de cada uno en la base de datos. 
 
-Realizando estas tareas vas a a tener una aplicación fullstack IoT del mundo real que utiliza tecnologías actuales en la que un backend es capaz de interactuar con una DB para cumplir con las peticiones de control que se le mandan desde el cliente web.
+## Introduccion al Proyecto
+
+Este proyecto es una aplicación web fullstack que se ejecuta sobre el ecosistema `Docker`. Está compuesta por un compilador de `TypeScript` que te permite utilizar este superset de JavaScript para poder programar un `cliente web`. También tiene un servicio en `NodeJS` que te permite ejecutar código en backend y al mismo tiempo disponibilizar el código del cliente web para interactar con el servicio. Además tiene una `base de datos` MySQL que puede interactuar con el backend para guardar y consultar datos, y de manera adicional trae un `administrador` de base de datos para poder administrar la base en caso que se necesite.
+
+La aplicacion IoT se encarga de crear 3 tablas: Devices, Tipos_dispositivos y Usuarios. Estas tablas se usan en conjunto para listar dispositivos por ususario, y disponer de ellos para eliminarlos o agregarmas otros dispositivos. Se puede modificar el estados de los dispositivos y su intensidad. 
+
+los aspectos de frontend y backend son comentados mas adelante (ver ##frontend y ##backend).
 
 En esta imagen podés ver una posible implementación del cliente web que controla los artefactos del hogar.
 
@@ -158,15 +166,23 @@ En esta sección podés ver los detalles específicos de funcionamiento del cód
 
 ### Agregar un dispositivo
 
-Completá los pasos para agregar un dispositivo desde el cliente web.
+Para agregar un dispositivo, el cliente debe ingresar con su usuario y contrasena, en consecuencia se listaran sus dispositivos y se habilita la opcion de agregar dispositivo. esta opcion se encuentra disponible a partir de un boton flotante en el margen derecho de la pagina web. Este boton abre una ventana emergente y se debera completar todos los datos solicitados: nombre, descripcion y tipo de dispositivo,los datos del usuario de autocompletan en el ingreso y no pueden ser modificados.Luego se presiona enviar. en caso de que todos los datos esten llenos se agrega a la base datos y se vera reflejado inmediatamente en pantalla.
 
 ### Frontend
 
-Completá todos los detalles sobre cómo armaste el frontend, sus interacciones, etc.
+Para el frontend empleamos el sistema de 12 columnas de Materialize (basado en CSS). De esta forma de ajusta la pantalla a los distintos tamanos de pantalla: XXL, XL, M, s. este Diseno en particular posee 3 columnas, una para las opciones de usuario (actualmente solo esta el ingreso, pero a futuro se puede agregar: AYUDA, ADMINISTRACION DE USUARIOS, NOVEDADES, etc. en el medio se encuentra la lista de dispositivos y en el margen derecho los botones flotantes para administrar los dispositivos (actualmente solo esta agregar, pero se puede sumar: Editar, ocultar, Programar, etc).
+
+En el main.ts se emplea la tecnologia AJAX para realizar solicitades asincronas al servidor desde la pagina WEB. Para ello enviamos los datos en formato JSON. Este proceso requiere la creacion de un objeto que permita realizar solicitudes HTTP (XMLHttpRequest), configuracion del metodo OPEN para especificar el tipo de solicitud y monitoreo de la funcion de devolucion de llamana (onreadystatechangue). 
+Esta tecnologia AJAX es la mas importante del proyecto ya que nos permite comunicarnos con el Backend.
+
+Todos los elementos HTML que se le agregaron el evento de "escucha" al click, se encuentran en window.addEventListener(). Las funciones consecuentes a este evente se encuentran en el handleEvent().
 
 ### Backend
 
-Completá todos los detalles de funcionamiento sobre el backend, sus interacciones con el cliente web, la base de datos, etc.
+El backend en Node.js utiliza una base de datos MySQL a traves del puerto de escucha 3000. Se crea una instancia de Express y se habilita CORS.
+SE definen distintas rutas para los diferentes servicios escpecificos que la aplicacion puede brindar.Se realizan consultas y operaciones en la base de datos MySQL en respuesta a estas rutas. Estos servicios refieren a sumar dispositivos, elimnarlos, consultar los datos de usuario, etc.
+Se utiliza express.json() para parsear datos en formato JSON.
+
 
 <details><summary><b>Ver los endpoints disponibles</b></summary><br>
 
@@ -176,20 +192,135 @@ Completá todos los endpoints del backend con los metodos disponibles, los heade
 
 ```json
 {
-    "method": "get",
-    "request_headers": "application/json",
+    "method": "GET",
+    "request_headers": {
+        "Content-Type": "application/json"
+    },
     "request_body": "",
     "response_code": 200,
-    "request_body": {
+    "response_body": {
         "devices": [
             {
                 "id": 1,
-                "status": true,
-                "description": "Kitchen light"
+                "name": "Lampara 1",
+                "status": 1,
+                "description": "Luz living",
+                "type": 0,
+                "binario": 0,
+                "initial_value": 69,
+                "id_user": 1
+            },
+            {
+                "id": 2,
+                "name": "Lampara 2",
+                "status": 0,
+                "description": "Luz cocina",
+                "type": 0,
+                "binario": 0,
+                "initial_value": 80,
+                "id_user": 1
+            },
+            // ... (otros dispositivos)
+        ]
+    }
+}
+``` 
+2) EStablecer estado y parametro configurable del dispositivo
+```json
+{
+    "method": "POST",
+    "request_headers": "application/json",
+    "request_body": {
+        "id": 1,
+        "state": true,
+        "initial_value": 0
+    },
+    "response_code": 200,
+    "response_body": {
+        "message": "Device updated successfully"
+    }
+}
+
+3) obtener los datos de Usuario
+
+{
+    "method": "GET",
+    "request_headers": "application/json",
+    "request_body": "",
+    "response_code": 200,
+    "response_body": {
+        "usuarios": [
+            {
+                "id": 1,
+                "nombre": "Pablo",
+                "contrasena": "text"
+            },
+            {
+                "id": 2,
+                "nombre": "Maria",
+                "contrasena": "texto"
             }
         ]
-    },
+    }
 }
+
+4) Obtener los tipos de Dsipositivos
+
+{
+    "method": "GET",
+    "request_headers": "application/json",
+    "request_body": "",
+    "response_code": 200,
+    "response_body": {
+        "tipos_dispositivos": [
+            {
+                "id": 1,
+                "binario": true,
+                "descripcion": "Dispositivo de iluminación"
+            },
+            {
+                "id": 2,
+                "nombre": false,
+                "descripcion": "Dispositivo de control de temperatura"
+            }
+        ]
+    }
+}
+
+5) Agregar dispositivos
+
+{
+    "method": "POST",
+    "request_headers": "application/json",
+    "request_body": {
+        "name": "New Device",
+        "description": "A newly added device",
+        "state": true,
+        "type": 1,
+        "binario": false,
+        "initial_value": 0,
+        "id_user": 1
+    },
+    "response_code": 200,
+    "response_body": {
+        "message": "Device added successfully"
+    }
+}
+
+6) Eliminar dispositivos 
+
+{
+    "method": "DELETE",
+    "request_headers": "application/json",
+    "request_body": {
+        "id": 1
+    },
+    "response_code": 200,
+    "response_body": {
+        "message": "Device deleted successfully"
+    }
+}
+
 ``` 
 
 </details>

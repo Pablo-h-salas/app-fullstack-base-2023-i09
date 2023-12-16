@@ -138,27 +138,24 @@ class Main implements EventListenerObject {
         xmlRequest.send(JSON.stringify(s));
     }
 
-    private cargarUsuario(): void {
-        let iNombre = <HTMLInputElement>document.getElementById("iNombre");
-        let iPassword = <HTMLInputElement>document.getElementById("iPassword");
-        let pInfo = document.getElementById("pInfo");
-        if (iNombre.value.length > 3 && iPassword.value.length > 3) {
-            let usuari1: Usuario = new Usuario(iNombre.value, "user", iPassword.value, 23);
-            this.usuarios.push(usuari1);
-            iNombre.value = "";
-            iPassword.value = "";
+    // funcion cargarUsuario - ya no sera implementada
+    // private cargarUsuario(): void {
+    //     let iNombre = <HTMLInputElement>document.getElementById("iNombre");
+    //     let iPassword = <HTMLInputElement>document.getElementById("iPassword");
+    //     let pInfo = document.getElementById("pInfo");
+    //     if (iNombre.value.length > 3 && iPassword.value.length > 3) {
+    //         let usuari1: Usuario = new Usuario(iNombre.value, "user", iPassword.value, 23);
+    //         this.usuarios.push(usuari1);
+    //         iNombre.value = "";
+    //         iPassword.value = "";
+    //         pInfo.innerHTML = "Se cargo correctamente!";
+    //         pInfo.className = "textoCorrecto";
 
-
-            pInfo.innerHTML = "Se cargo correctamente!";
-            pInfo.className = "textoCorrecto";
-
-        } else {
-            pInfo.innerHTML = "Usuairo o contraseña incorrecta!!!";
-            pInfo.className = "textoError";
-        }
-
-
-    }
+    //     } else {
+    //         pInfo.innerHTML = "Usuairo o contraseña incorrecta!!!";
+    //         pInfo.className = "textoError";
+    //     }
+    // }
 
     private buscarUsuarios(): void {
 
@@ -168,7 +165,7 @@ class Main implements EventListenerObject {
         let htitulo = document.getElementById("titulo");
         let iusuario = document.getElementById("usuario");
         let idusuario = document.getElementById("id_user") as HTMLInputElement;
-
+        document.getElementById('adicionar').style.display = 'block';
 
         let usuario_actual: Usuarios | undefined;
 
@@ -359,12 +356,7 @@ class Main implements EventListenerObject {
     handleEvent(object: Event): void {
         let elemento = <HTMLElement>object.target;
 
-        if ("btnListar" == elemento.id) {
-            //this.buscarDevices();          
-        } else if ("btnGuardar" == elemento.id) {
-            this.cargarUsuario();
-            console.log("presionaste guardar");
-        } else if ("btnIngresar" == elemento.id) {
+        if ("btnIngresar" == elemento.id) {
             this.buscarUsuarios();
         } else if ("btnSumar" == elemento.id) {
             this.sumarDispositivo();
@@ -417,12 +409,6 @@ window.addEventListener("load", () => {
 
     let main1: Main = new Main();
 
-    let boton = document.getElementById("btnListar");
-    boton.addEventListener("click", main1);
-
-    let botonGuardar = document.getElementById("btnGuardar");
-    botonGuardar.addEventListener("click", main1);
-
     // botones de ingresar de la ventana usuarios
     let botonIngresar = document.getElementById("btnIngresar");
     botonIngresar.addEventListener("click", main1);
@@ -431,8 +417,8 @@ window.addEventListener("load", () => {
     let botonSumarDisp = document.getElementById("btnSumar");
     botonSumarDisp.addEventListener("click", main1);
 
-    let botonEditarDisp = document.getElementById("editarDisp");
-    botonEditarDisp.addEventListener("click", main1);
+    // let botonEditarDisp = document.getElementById("editarDisp");
+    // botonEditarDisp.addEventListener("click", main1);
 
     let botonEnviar = document.getElementById("btnEnviar");
     botonEnviar.addEventListener("click", main1);
