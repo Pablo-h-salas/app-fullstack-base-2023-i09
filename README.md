@@ -19,6 +19,14 @@ Este proyecto es una aplicación web fullstack que se ejecuta sobre el ecosistem
 
 La aplicacion IoT se encarga de crear 3 tablas: Devices, Tipos_dispositivos y Usuarios. Estas tablas se usan en conjunto para listar dispositivos por ususario, y disponer de ellos para eliminarlos o agregarmas otros dispositivos. Se puede modificar el estados de los dispositivos y su intensidad. 
 
+las funciones agregadas son:
+
+Ingreso por Usuario: se arma una nueva tabla de datos, y un nuevo endpoint.Se consulta a este ultimo utilizando la herramienta AJAX para obtener la informacion necesaria y proporcionar los accesos a dispositivos de acuerdo al usuario actual.
+
+Eliminar dispositivos: A la funcion de buscarDispositivos se le agrega un boton de aliminar el cual a traves de la ruta eliminar-dispositivo y el identificador unico que posee cada boton me permite eliminar el dispositivo seleccionado, antes de ejecutar dicha accion abre una ventana emergente para verificar la accion.
+
+Agregar dispositvos: Se abre una nueva ventana emergente y se procede a completar un formulario automaticamente (No editables, como usuario_actual) y otros parametros a disposicion del usuario. Este set de datos se envia a traves de la herramienta AJAX y mediante la implementacion de SQL de agrega el dispositivo en cuestion, permitiendo su visualizacion de forma inmediata. 
+
 los aspectos de frontend y backend son comentados mas adelante (ver ##frontend y ##backend).
 
 En esta imagen podés ver una posible implementación del cliente web que controla los artefactos del hogar.
