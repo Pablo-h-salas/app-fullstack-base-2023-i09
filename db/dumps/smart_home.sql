@@ -7,6 +7,10 @@
 -- Server version: 5.7.43
 -- PHP Version: 8.2.8
 
+CREATE DATABASE IF NOT EXISTS smart_home;
+
+USE smart_home;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
